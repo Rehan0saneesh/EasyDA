@@ -1,0 +1,234 @@
+TAPEOUT — FEATURES AND CAPABILITIES
+====================================
+
+Tapeout is an iPad app that teaches chip design. You write Verilog on one side
+and watch it become a chip on the other: a 3D model, a schematic, a routed
+layout, and finally a die on a silicon wafer. It is a Swift Playgrounds app
+(SwiftUI, UIKit and SceneKit, iOS 17 or later) and works fully offline.
+
+
+1. HOME SCREEN
+--------------
+- Two Liquid Glass tiles: "Learn" (the guided course) and "Editor" (a free
+  workspace).
+- An Import button that opens the Files picker.
+    - A Verilog file (.v, .sv) opens in the editor.
+    - A waveform file (.vcd) opens in a full-screen waveform viewer.
+- Both workspaces stay alive, so your work survives a trip back to the home
+  screen.
+
+
+2. WORKSPACE LAYOUT
+-------------------
+- Chip on the left, code on the right, with a divider you drag to resize
+  (20% to 80%).
+- In portrait or a narrow window the two panes stack vertically.
+- Black and dark-gray theme. White is the only highlight; red appears only for
+  errors.
+- Every button, label and spacing scales with the window size, from Split View
+  and iPad mini up to a 13-inch iPad (see section 12).
+
+
+3. CODE EDITOR
+--------------
+- Monospaced editor with Verilog syntax highlighting.
+- Recompiles as you type. Errors show in a status bar and tint the offending
+  line.
+- An extra key row above the keyboard for common Verilog symbols.
+- Cross-probing: tap a cell or signal anywhere and its source line is
+  highlighted.
+- An Examples menu in the editor: 8-bit counter, UART sender, and a Tiny
+  Tapeout CPU.
+
+
+4. VERILOG THE APP UNDERSTANDS
+------------------------------
+- Several modules in one file, with module instances (the design is flattened).
+- Buses up to 64 bits, wire and reg, memories (reg [7:0] ram [0:15]),
+  parameters and localparams.
+- assign, including assignments to single bits and part-selects.
+- always @(posedge clk) with non-blocking assignments (registers and memory
+  writes).
+- always @(*) combinational blocks, with a clear error if a latch would be
+  inferred.
+- if / else and case statements.
+- Operators: + - * / %, comparisons, shifts, bitwise and logical operators,
+  reduction operators, the ?: conditional, bit and part selects,
+  concatenation and replication.
+- Gate primitives (and, or, xor, nand, nor, xnor, not, buf).
+- Sized literals in binary, hex, decimal and octal. Compiler directives such as
+  `default_nettype are skipped.
+
+Limits: one clock; registers start at 0; x and z are treated as 0; values are
+unsigned; an asynchronous reset is treated as synchronous. Not supported: for
+loops, generate, functions and tasks, inout ports, initial blocks, signed
+arithmetic, and parameter overrides on instances.
+
+
+5. SYNTHESIS AND SIMULATION
+---------------------------
+- Synthesises the code into a word-level netlist: adders, comparators, muxes,
+  shifters, registers and RAM as single blocks, with constant folding and
+  shared sub-expressions.
+- Simulates the real netlist, cycle by cycle. Nothing is faked: the lamps,
+  waveforms and register values all come from evaluating your design.
+- Clocked designs: Step one clock edge, Run continuously, or Clear back to
+  zero.
+- Combinational designs: toggle inputs and the outputs settle immediately.
+
+
+6. FOUR VIEWS OF THE CHIP
+-------------------------
+3D
+- A tasteful 3D chip: package, die, bond pads, cells and metal wires on four
+  stacked layers. Wires light up when they carry a 1. Buses are drawn taller.
+- Orbit, pinch to zoom, tap an input pad to toggle it, tap a cell to select it.
+
+Schematic
+- The elaborated design drawn with standard gate symbols, arithmetic blocks,
+  registers and memory, laid out by logic depth.
+- Pan and pinch. Tap a signal to select it.
+- Cone tracing: show everything that feeds a signal (fan-in), everything it
+  drives (fan-out), or both. Tracing stops at registers.
+
+Layout
+- The placed and routed design from above: cells, pads, three routing layers
+  (M1 to M3), an M4 layer for register feedback, and vias.
+- Layer toggles for cells, each metal layer and vias.
+- A ruler: tap two points to measure a distance.
+- Density setting (Compact, Normal, Roomy) that re-places and re-routes.
+- Overlays: routing congestion heat map, timing (critical path), and signal
+  activity.
+- Design-rule markers drawn on the layout, numbered to match the Checks list.
+
+Wafer
+- Your chip as it would leave a fab, at four zoom levels:
+    1. The wafer: a silicon disc with a flat (100 and 150 mm) or a notch
+       (200 and 300 mm), a 3 mm edge-exclusion ring, and your die stepped
+       across it with saw lanes between copies. Partial dies at the rim are
+       greyed out.
+    2. A yield map: each die passes or fails from a Poisson model of die area
+       and the defect density you pick. Failed dies are marked in red.
+    3. One die: seal ring, labelled bond pads (one per port bit plus VDD and
+       VSS), power and ground rings, power straps, and a separate wire from
+       every pad to its pin on the core.
+    4. The standard cells, in the style of a Tiny Tapeout layout render: rows
+       of cells with diffusion, polysilicon gates and local interconnect,
+       shared power rails, decap and fill cells, well taps, a clock tree, and
+       signal routing on three metal layers, with labelled pins along the top
+       edge.
+- The design is broken into single-bit standard cells sized like the SkyWater
+  130 nm library (0.46 um sites, 2.72 um rows), placed in rows, and fitted to
+  the smallest Tiny Tapeout tile it fits (1x1 up to 8x2) at no more than 60%
+  full.
+- Buttons jump straight to Wafer, Die or Cells. Menus set the wafer size (100,
+  150, 200, 300 mm) and defect density.
+- A summary shows core size and tile, cell and flip-flop counts, how full the
+  tile is, total wire length, die size, dies per wafer, estimated yield and
+  good dies.
+
+The wafer view is an estimate, not a foundry result. See section 13.
+
+
+7. THE DOCK (BELOW THE CHIP)
+----------------------------
+Bench
+- Clock controls and a cycle counter.
+- Switches for 1-bit inputs and per-bit toggles for buses.
+- Output lamps and bus values.
+- Live register values and memory contents.
+- A full truth table for small single-bit designs, with the current row
+  marked. In lessons, wrong rows are flagged.
+
+Waves
+- A waveform for every input, output and register.
+- Clocked designs record one sample per clock step; combinational designs show
+  a delay-accurate sweep of every input combination.
+- Radix per view: binary, hex, unsigned decimal, signed decimal, ASCII and
+  floating point.
+- Protocol decoding: UART, SPI and I2C. Pick which signal plays each role
+  (the app guesses from the names) and decoded bytes appear as labelled frames.
+- Analog rows for real-valued signals from imported files.
+- A time cursor you drag; tapping a row selects that signal in every view.
+
+Timing
+- Static timing analysis using a delay per cell type.
+- The critical path listed cell by cell, with the arrival time at each step.
+- A timing budget you set, and the slack for every output against it.
+
+Checks
+- Design-rule check: minimum spacing and shorts between wires of different
+  nets. Tap a violation to jump to it on the layout.
+- Lint: inputs that are never used, outputs stuck at a constant, and signals
+  with a high fan-out.
+
+
+8. IMPORTED WAVEFORMS
+---------------------
+- Reads VCD files, including bus and real (analog) signals.
+- The same viewer as the Waves tab: radix switching, the time cursor, and
+  UART, SPI and I2C decoding.
+- Large files are resampled (up to 4,000 samples and 300 signals).
+
+
+9. THE COURSE (LEARN MODE)
+--------------------------
+Thirteen lessons, each with a short concept, a goal, starter code, a hint and
+a worked solution. Each one is checked against your actual design, not by
+matching text.
+
+  1 to 7   Gates and combinational logic: your first wire, the inverter, AND,
+           XOR, a half adder, a multiplexer and a full adder.
+  8        Reading a waveform.
+  9        Tracing a cone of influence in the schematic.
+  10       Finding the critical path and meeting a timing budget.
+  11       Metal layers and layer toggles in the layout.
+  12       Fixing a design-rule violation by changing the density.
+  13       Free build.
+
+A verdict badge shows whether the lesson is passed, what is still wrong, or
+what to do next. Lessons can be reset.
+
+
+10. CROSS-PROBING
+-----------------
+Selecting a signal in any one place highlights it everywhere: the 3D chip,
+the schematic, the layout, the waveform row and the source line.
+
+
+11. BUILT-IN EXAMPLES
+---------------------
+- 8-bit counter.
+- UART sender (decodes to the letter 'A' in the Waves tab).
+- Tiny CPU: a Tiny Tapeout project with a program counter, two registers, a
+  16-byte RAM and a small instruction set. It becomes 64 word-level blocks, or
+  765 standard cells with 155 flip-flops, fits a 1x1 Tiny Tapeout tile at 59%
+  full, and gives a 1.32 x 1.32 mm die.
+
+
+12. SCREEN SIZES
+----------------
+- The app measures its window and scales text, buttons, tap targets and
+  spacing together: 1.0 on an 11-inch iPad, down to 0.8 in Split View or on an
+  iPad mini, up to 1.3 on a 13-inch iPad.
+- Rows of buttons scroll sideways when they do not fit.
+- The dock takes a share of the height, within a minimum and maximum.
+- The code editor's text stays at one size so code is always readable.
+
+
+13. WHAT IT DOES NOT DO
+-----------------------
+- It does not produce files a foundry can manufacture from (no GDSII export),
+  and it is not a signoff tool.
+- Standard-cell counts, placement and routing in the wafer view are estimates.
+  A real flow would optimise the logic and route every net to exact rules, and
+  the detailed routing here is not design-rule checked.
+- Die size assumes 60 um bond pads on a 90 um pitch. Yield uses a simple
+  Poisson model.
+- No LVS, IR-drop, thermal or clock-skew analysis, and no state-machine
+  diagrams.
+- Waveform import is VCD only (no FST, FSDB or WLF). Protocol decoding covers
+  UART, SPI and I2C (no AXI or Wishbone).
+- The app has been compiled for iPad and its views rendered on a Mac, but it
+  has not yet been run on an iPad or in the simulator, so touch gestures, the
+  file picker and the Liquid Glass effect are untested.
